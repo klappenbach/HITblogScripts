@@ -129,6 +129,8 @@ Date.prototype.format = function (mask, utc) {
 
 var posts = new js_cols.RedBlackMap();
 var workDates = new js_cols.RedBlackSet();
+const DATE_MARKER = "DATE_MARKER";
+
 jQuery(document).ready(function() {
 
     $.each($('div[class*=HTML] > h2'), function() {
@@ -151,19 +153,21 @@ jQuery(document).ready(function() {
 
 
     $.each($('.date-header'), function() {
-        var jQdiv = $(this).parent();
+        var div = $(this).parent().get(0);
         //console.log('div: ' +  jQdiv);
 
         var dateString = $(this).text();
         //console.log('date: ' + dateString);
         var date = new Date(Date.parse(dateString)).format("yyyymmdd");
-        posts.insert(date, jQdiv);
+        posts.insert(date, div);
         //console.log('date after parse: ' + date.toDateString());
 
 
     });
-    console.log("after document ready:");
-    console.log(posts.getValues());
+
+    /// Setup div to throw posts into when browsing the training data graph
+    $('<div id="postsContainer"><div/></div>').insertAfter($('#HTML1'));
+
 });
 var options = {
     chart: {
@@ -218,7 +222,9 @@ var options = {
             var range = posts.range(thisWorkoutDate, workDates.successor(thisWorkoutDate));
             console.log(range);
             $.each(range, function(){
-                if (this != null) {
+                if (this != DATE_MARKER) {
+                    console.log("current this: " + this);
+                    $('#postsContainer').html(this);
                     $(this).effect("highlight", {}, 3000);
                 }
             });
@@ -305,7 +311,7 @@ $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X
         //"" + year + (month+1) + day
         var formattedDate = new Date(year, month, day).format("yyyymmdd");
         if (posts.get(formattedDate) == null) {
-            posts.insert(formattedDate, null);
+            posts.insert(formattedDate, DATE_MARKER);
         }
 
         // point
