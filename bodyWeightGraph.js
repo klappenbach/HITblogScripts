@@ -97,8 +97,7 @@ var optionsBW = {
     series: []
 };
 
-// Create the chart
-var chartBW = new Highcharts.Chart(optionsBW);
+
 
 var bodyWeightSeries = new js_cols.HashMap();
 /*
@@ -140,12 +139,12 @@ $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X
             yAxis: serieName === "Weight"? 0: 1,
             color:  serieName === "Weight"? '#DB843D': undefined
         };
-        setTimeout(function() {
-            chartBW.addSeries(serie);
-        }, slowDrawGraphs? 8000: 0);
+
+        optionsBW.series.push(serie);
     });
 
-
+    // Create the chart
+    var chartBW = new Highcharts.Chart(optionsBW);
 });
 
 

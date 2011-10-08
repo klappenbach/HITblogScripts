@@ -14,14 +14,14 @@
 
 var dateFormat = function () {
     var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
-        timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
-        timezoneClip = /[^-+\dA-Z]/g,
-        pad = function (val, len) {
-            val = String(val);
-            len = len || 2;
-            while (val.length < len) val = "0" + val;
-            return val;
-        };
+            timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
+            timezoneClip = /[^-+\dA-Z]/g,
+            pad = function (val, len) {
+                val = String(val);
+                len = len || 2;
+                while (val.length < len) val = "0" + val;
+                return val;
+            };
 
     // Regexes and supporting functions are cached through closure
     return function (date, mask, utc) {
@@ -46,44 +46,44 @@ var dateFormat = function () {
         }
 
         var _ = utc ? "getUTC" : "get",
-            d = date[_ + "Date"](),
-            D = date[_ + "Day"](),
-            m = date[_ + "Month"](),
-            y = date[_ + "FullYear"](),
-            H = date[_ + "Hours"](),
-            M = date[_ + "Minutes"](),
-            s = date[_ + "Seconds"](),
-            L = date[_ + "Milliseconds"](),
-            o = utc ? 0 : date.getTimezoneOffset(),
-            flags = {
-                d:    d,
-                dd:   pad(d),
-                ddd:  dF.i18n.dayNames[D],
-                dddd: dF.i18n.dayNames[D + 7],
-                m:    m + 1,
-                mm:   pad(m + 1),
-                mmm:  dF.i18n.monthNames[m],
-                mmmm: dF.i18n.monthNames[m + 12],
-                yy:   String(y).slice(2),
-                yyyy: y,
-                h:    H % 12 || 12,
-                hh:   pad(H % 12 || 12),
-                H:    H,
-                HH:   pad(H),
-                M:    M,
-                MM:   pad(M),
-                s:    s,
-                ss:   pad(s),
-                l:    pad(L, 3),
-                L:    pad(L > 99 ? Math.round(L / 10) : L),
-                t:    H < 12 ? "a" : "p",
-                tt:   H < 12 ? "am" : "pm",
-                T:    H < 12 ? "A" : "P",
-                TT:   H < 12 ? "AM" : "PM",
-                Z:    utc ? "UTC" : (String(date).match(timezone) || [""]).pop().replace(timezoneClip, ""),
-                o:    (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
-                S:    ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
-            };
+                d = date[_ + "Date"](),
+                D = date[_ + "Day"](),
+                m = date[_ + "Month"](),
+                y = date[_ + "FullYear"](),
+                H = date[_ + "Hours"](),
+                M = date[_ + "Minutes"](),
+                s = date[_ + "Seconds"](),
+                L = date[_ + "Milliseconds"](),
+                o = utc ? 0 : date.getTimezoneOffset(),
+                flags = {
+                    d:    d,
+                    dd:   pad(d),
+                    ddd:  dF.i18n.dayNames[D],
+                    dddd: dF.i18n.dayNames[D + 7],
+                    m:    m + 1,
+                    mm:   pad(m + 1),
+                    mmm:  dF.i18n.monthNames[m],
+                    mmmm: dF.i18n.monthNames[m + 12],
+                    yy:   String(y).slice(2),
+                    yyyy: y,
+                    h:    H % 12 || 12,
+                    hh:   pad(H % 12 || 12),
+                    H:    H,
+                    HH:   pad(H),
+                    M:    M,
+                    MM:   pad(M),
+                    s:    s,
+                    ss:   pad(s),
+                    l:    pad(L, 3),
+                    L:    pad(L > 99 ? Math.round(L / 10) : L),
+                    t:    H < 12 ? "a" : "p",
+                    tt:   H < 12 ? "am" : "pm",
+                    T:    H < 12 ? "A" : "P",
+                    TT:   H < 12 ? "AM" : "PM",
+                    Z:    utc ? "UTC" : (String(date).match(timezone) || [""]).pop().replace(timezoneClip, ""),
+                    o:    (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
+                    S:    ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 != 10) * d % 10]
+                };
 
         return mask.replace(token, function ($0) {
             return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
@@ -129,7 +129,7 @@ Date.prototype.format = function (mask, utc) {
 
 var posts = new js_cols.RedBlackMap();
 var workDates = new js_cols.RedBlackSet();
-const DATE_MARKER = "DATE_MARKER";
+var DATE_MARKER = "DATE_MARKER";
 
 jQuery(document).ready(function() {
 
@@ -138,11 +138,11 @@ jQuery(document).ready(function() {
             $(this).siblings('div').slideToggle('slow');
         });
         $(this).hover(function() {
-                $(this).css('cursor', 'pointer');
-            }, function() {
-                $(this).css('cursor', 'auto');
-            }
-        );
+            $(this).css('cursor', 'pointer');
+        }, function() {
+            $(this).css('cursor', 'auto');
+        }
+                );
         //$(this).prepend("<div style='float: left; margin-right: 10px' class='ui-expandable-icon ui-icon ui-icon-circle-triangle-s'></div>");
         $(this).append("<div style='float: right' class='ui-expandable-icon ui-icon ui-icon-circle-triangle-s'></div>");
 
@@ -169,10 +169,10 @@ jQuery(document).ready(function() {
     $('<div id="postsContainer"><div/></div>').insertAfter($('#HTML1'));
 
 });
+
 var options = {
     chart: {
         renderTo: 'container',
-        defaultSeriesType: 'spline',
         zoomType: 'x',
         spacingRight: 20,
         spacingLeft: 20,
@@ -183,7 +183,7 @@ var options = {
     },
     subtitle: {
         text: document.ontouchstart === undefined ?
-            'Click and drag in the plot area to zoom in' : 'Drag your finger over the plot to zoom in'
+                'Click and drag in the plot area to zoom in' : 'Drag your finger over the plot to zoom in'
     },
     xAxis: {
         type: 'datetime',
@@ -221,11 +221,12 @@ var options = {
             console.log("range : " + thisWorkoutDate + " to " + workDates.successor(thisWorkoutDate));
             var range = posts.range(thisWorkoutDate, workDates.successor(thisWorkoutDate));
             console.log(range);
-            $.each(range, function(){
+            $.each(range, function() {
                 if (this != DATE_MARKER) {
                     console.log("current this: " + this);
-                    $('#postsContainer').html(this);
-                    $(this).effect("highlight", {}, 3000);
+                    //$(this).hide();
+                    $('.blog-posts').prepend(this);
+                    $(this).fadeIn().effect("highlight", {}, 3000);
                 }
             });
 
@@ -233,7 +234,7 @@ var options = {
 
             $.each(this.points, function(i, point) {
                 s += '<br/><span style="color: ' + point.series.color + '">' + point.series.name + '</span>: <b>' +
-                    point.y + '</b>';
+                        point.y + '</b>';
             });
 
             return s;
@@ -261,7 +262,7 @@ var options = {
                             },
                             headingText: this.series.name,
                             maincontentText: Highcharts.dateFormat('%A, %b %e, %Y', this.x) + ':<br/> ' +
-                                'work: ' + this.y + (this.weight !== undefined ? '<br/> ' + 'weight: ' + this.weight + ' kg<br/> ' + 'TUL: ' + this.seconds + ' secs' : ""),
+                                    'work: ' + this.y + (this.weight !== undefined ? '<br/> ' + 'weight: ' + this.weight + ' kg<br/> ' + 'TUL: ' + this.seconds + ' secs' : ""),
                             width: 100
                         });
 
@@ -276,8 +277,6 @@ var options = {
     series: []
 };
 
-// Create the chart
-var chart = new Highcharts.Chart(options);
 
 var workSeries = new js_cols.HashMap();
 
@@ -349,27 +348,26 @@ $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X
         AVGserie.data.push(point);
     });
 
-    setTimeout(function() {
-        chart.addSeries(AVGserie);
-        //options.series.push(AVGserie);
-    }, slowDrawGraphs ? 2000 : 0);
-
+    options.series.push(AVGserie);
 
     $.each(workSeries.getKeys(), function(i, key) {
         var serie = {
             name: "" + key,
             data: workSeries.get(key)
         };
-        setTimeout(function() {
-            chart.addSeries(serie);
-        }, slowDrawGraphs ? 3500 + 1500 * Math.pow(i, 0.7) : 0);
+        options.series.push(serie);
+
 
     });
     console.log("after json fetch:");
     console.log(posts.getValues());
+
+    // Create the chart
+    var chart = new Highcharts.Chart(options);
 });
 
-setInterval('resetCookie()', 3000);
+
+//setInterval('resetCookie()', 3000);
 function resetCookie() {
     var date = new Date();
     date.setTime(date.getTime() + 5 * 1000);
