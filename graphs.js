@@ -224,9 +224,12 @@ var options = {
             $.each(range, function() {
                 if (this != DATE_MARKER) {
                     console.log("current this: " + this);
-                    //$(this).hide();
-                    $('.blog-posts').prepend(this);
-                    $(this).fadeIn().effect("highlight", {}, 3000);
+                    if (!$(this).is($('.blog-posts > div:first-child'))) {
+                        $(this).hide();
+                        //$(this).clone().prependTo($('.blog-posts'));
+                        $('.blog-posts').prepend(this);
+                        $(this).fadeIn(); //.effect("highlight", {}, 3000);
+                    }
                 }
             });
 
