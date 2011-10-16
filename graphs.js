@@ -144,7 +144,6 @@ jQuery(document).ready(function() {
             $(this).css('cursor', 'auto');
         }
                 );
-        //$(this).prepend("<div style='float: left; margin-right: 10px' class='ui-expandable-icon ui-icon ui-icon-circle-triangle-s'></div>");
         $(this).append("<div style='float: right' class='ui-expandable-icon ui-icon ui-icon-circle-triangle-s'></div>");
 
 
@@ -153,21 +152,12 @@ jQuery(document).ready(function() {
     // Find all post dates
     $.each($('.date-header'), function() {
         var div = $(this).parent().get(0);
-        //console.log('div: ' +  jQdiv);
-
         var dateString = $(this).text();
-        //console.log('date: ' + dateString);
         var date = new Date(Date.parse(dateString)).format("yyyymmdd");
         posts.insert(date, div);
-        //console.log('date after parse: ' + date.toDateString());
-
-
     });
 
     $('.blog-posts').prepend('<ul id="mycarousel" class="jcarousel-skin-tango"/>');
-    //var lis = $('.date-outer').wrap('<li/>');
-    //$('#mycarousel').prepend($('li').get().reverse());
-
     $('.blog-posts').prepend($('<div class="jcarousel-scroll"><form action=""><a href="#" id="mycarousel-prev">&laquo; Prev </a><a href="#" id="mycarousel-next">Next &raquo;</a></form></div>'));
 
 
@@ -193,7 +183,6 @@ var options = {
         spacingRight: 20,
         spacingLeft: 20,
         type: 'line'
-        //defaultSeriesType: 'line'
     },
     title: {
         text: ''
@@ -233,9 +222,9 @@ var options = {
         formatter: function() {
             var thisWorkoutDate = new Date(this.x).format("yyyymmdd");
             var indexOfLi = $('li[id=' + thisWorkoutDate + ']').index();
-            console.log(indexOfLi);
             if (indexOfLi >= 0) {
-                postsCarousel.scroll(indexOfLi + 1);
+                $('ul').stop(false, true);
+                postsCarousel.scroll(indexOfLi + 1, true);
             }
             var s = '<span style="font-size: smaller;">' + new Date(this.x).toDateString() + '</span>';
 
