@@ -133,6 +133,7 @@ var DATE_MARKER = "DATE_MARKER";
 
 jQuery(document).ready(function() {
 
+    // expandable divs for charts
     $.each($('div[class*=HTML] > h2'), function() {
         $(this).click(function() {
             $(this).siblings('div').slideToggle('slow');
@@ -202,7 +203,8 @@ var options = {
         zoomType: 'x',
         spacingRight: 20,
         spacingLeft: 20,
-        defaultSeriesType: 'scatter'
+        type: 'line'
+        //defaultSeriesType: 'line'
     },
     title: {
         text: ''
