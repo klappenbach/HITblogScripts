@@ -151,8 +151,6 @@ jQuery(document).ready(function() {
     });
 
     // Find all post dates
-
-
     $.each($('.date-header'), function() {
         var div = $(this).parent().get(0);
         //console.log('div: ' +  jQdiv);
@@ -167,35 +165,26 @@ jQuery(document).ready(function() {
     });
 
     $('.blog-posts').prepend('<ul id="mycarousel" class="jcarousel-skin-tango"/>');
-    var lis = $('.date-outer').wrap('<li/>');
-    $('#mycarousel').prepend($('li').get().reverse());
+    //var lis = $('.date-outer').wrap('<li/>');
+    //$('#mycarousel').prepend($('li').get().reverse());
 
     $('.blog-posts').prepend($('<div class="jcarousel-scroll"><form action=""><a href="#" id="mycarousel-prev">&laquo; Prev </a><a href="#" id="mycarousel-next">Next &raquo;</a></form></div>'));
 
-    function mycarousel_initCallback(carousel) {
-
-        jQuery('#mycarousel-next').bind('click', function() {
-            carousel.next();
-            return false;
-        });
-
-        jQuery('#mycarousel-prev').bind('click', function() {
-            carousel.prev();
-            return false;
-        });
-    }
-
-    jQuery('#mycarousel').jcarousel({
-        // Configuration goes here
-        // This tells jCarousel NOT to autobuild prev/next buttons
-        buttonNextHTML: null,
-        buttonPrevHTML: null,
-        initCallback: mycarousel_initCallback,
-        visible: 1,
-        scroll: 1
-    });
 
 });
+var postsCarousel;
+function mycarousel_initCallback(carousel) {
+    postsCarousel = carousel;
+    jQuery('#mycarousel-next').bind('click', function() {
+        carousel.next();
+        return false;
+    });
+
+    jQuery('#mycarousel-prev').bind('click', function() {
+        carousel.prev();
+        return false;
+    });
+}
 
 var options = {
     chart: {
@@ -242,25 +231,12 @@ var options = {
         crosshairs: true,
         shared: true,
         formatter: function() {
-            /*            var thisWorkoutDate = new Date(this.x).format("yyyymmdd");
-             //console.log("next date: " + workDates.successor(thisWorkoutDate).toLocaleDateString() );
-             console.log("dates: " + posts.getValues());
-             console.log("keys: " + posts.getKeys());
-             console.log("range : " + thisWorkoutDate + " to " + workDates.successor(thisWorkoutDate));
-             var range = posts.range(thisWorkoutDate, workDates.successor(thisWorkoutDate));
-             console.log(range);
-             $.each(range, function() {
-             if (this != DATE_MARKER) {
-             console.log("current this: " + this);
-             if (!$(this).is($('.blog-posts > div:first-child'))) {
-             $(this).hide();
-             //$(this).clone().prependTo($('.blog-posts'));
-             $('.blog-posts').prepend(this);
-             $(this).fadeIn(); //.effect("highlight", {}, 3000);
-             }
-             }
-             });*/
-
+            var thisWorkoutDate = new Date(this.x).format("yyyymmdd");
+            var indexOfLi = $('li[id=' + thisWorkoutDate + ']').index();
+            console.log(indexOfLi);
+            if (indexOfLi >= 0) {
+                postsCarousel.scroll(indexOfLi + 1);
+            }
             var s = '<span style="font-size: smaller;">' + new Date(this.x).toDateString() + '</span>';
 
             $.each(this.points, function(i, point) {
@@ -359,6 +335,27 @@ $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X
         workDates.insert(formatted, formatted);
     });
 
+    // Populate posts divs, so that posts belong to each workout are sorted into their corresponding divs
+    $.each(workDates.getValues(), function() {
+        var range = posts.range(this, workDates.successor(this));
+        console.log('range: ' + range);
+        var onlyDivs = $.grep(range, function(item, index) {
+            return item != DATE_MARKER;
+        });
+        var lis = $(onlyDivs).wrapAll('<li id="' + this + '"/>');
+    });
+    $('#mycarousel').prepend($('li').get().reverse());
+
+    // initialize carousel
+    jQuery('#mycarousel').jcarousel({
+        // Configuration goes here
+        // This tells jCarousel NOT to autobuild prev/next buttons
+        buttonNextHTML: null,
+        buttonPrevHTML: null,
+        initCallback: mycarousel_initCallback,
+        visible: 1,
+        scroll: 1
+    });
 
     var AVGserie = {
         name: "Average",
