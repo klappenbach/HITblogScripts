@@ -165,8 +165,34 @@ jQuery(document).ready(function() {
 
     });
 
-    /// Setup div to throw posts into when browsing the training data graph
-    $('<div id="postsContainer"><div/></div>').insertAfter($('#HTML1'));
+    $('.blog-posts').prepend('<ul id="mycarousel" class="jcarousel-skin-tango"/>');
+    var lis = $('.date-outer').wrap('<li/>');
+    $('#mycarousel').prepend($('li').get().reverse());
+
+    $('.blog-posts').prepend($('<div class="jcarousel-scroll"><form action=""><a href="#" id="mycarousel-prev">&laquo; Prev </a><a href="#" id="mycarousel-next">Next &raquo;</a></form></div>'));
+
+    function mycarousel_initCallback(carousel) {
+
+        jQuery('#mycarousel-next').bind('click', function() {
+            carousel.next();
+            return false;
+        });
+
+        jQuery('#mycarousel-prev').bind('click', function() {
+            carousel.prev();
+            return false;
+        });
+    }
+
+    jQuery('#mycarousel').jcarousel({
+        // Configuration goes here
+        // This tells jCarousel NOT to autobuild prev/next buttons
+        buttonNextHTML: null,
+        buttonPrevHTML: null,
+        initCallback: mycarousel_initCallback,
+        visible: 1,
+        scroll: 1
+    });
 
 });
 
@@ -212,26 +238,26 @@ var options = {
     ],
     tooltip: {
         crosshairs: true,
-        shared: true
-        ,formatter: function() {
-            var thisWorkoutDate = new Date(this.x).format("yyyymmdd");
-            //console.log("next date: " + workDates.successor(thisWorkoutDate).toLocaleDateString() );
-            console.log("dates: " + posts.getValues());
-            console.log("keys: " + posts.getKeys());
-            console.log("range : " + thisWorkoutDate + " to " + workDates.successor(thisWorkoutDate));
-            var range = posts.range(thisWorkoutDate, workDates.successor(thisWorkoutDate));
-            console.log(range);
-            $.each(range, function() {
-                if (this != DATE_MARKER) {
-                    console.log("current this: " + this);
-                    if (!$(this).is($('.blog-posts > div:first-child'))) {
-                        $(this).hide();
-                        //$(this).clone().prependTo($('.blog-posts'));
-                        $('.blog-posts').prepend(this);
-                        $(this).fadeIn(); //.effect("highlight", {}, 3000);
-                    }
-                }
-            });
+        shared: true,
+        formatter: function() {
+            /*            var thisWorkoutDate = new Date(this.x).format("yyyymmdd");
+             //console.log("next date: " + workDates.successor(thisWorkoutDate).toLocaleDateString() );
+             console.log("dates: " + posts.getValues());
+             console.log("keys: " + posts.getKeys());
+             console.log("range : " + thisWorkoutDate + " to " + workDates.successor(thisWorkoutDate));
+             var range = posts.range(thisWorkoutDate, workDates.successor(thisWorkoutDate));
+             console.log(range);
+             $.each(range, function() {
+             if (this != DATE_MARKER) {
+             console.log("current this: " + this);
+             if (!$(this).is($('.blog-posts > div:first-child'))) {
+             $(this).hide();
+             //$(this).clone().prependTo($('.blog-posts'));
+             $('.blog-posts').prepend(this);
+             $(this).fadeIn(); //.effect("highlight", {}, 3000);
+             }
+             }
+             });*/
 
             var s = '<span style="font-size: smaller;">' + new Date(this.x).toDateString() + '</span>';
 
