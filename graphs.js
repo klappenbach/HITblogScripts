@@ -166,17 +166,22 @@ stopCurrentCarouselAnimation = function () {
 };
 
 var postsCarousel;
+function getCarouselIndex() {
+    console.log(postsCarousel.first);
+}
 function mycarousel_initCallback(carousel) {
     postsCarousel = carousel;
     jQuery('#mycarousel-next').bind('click', function() {
         stopCurrentCarouselAnimation(); // stop ongoing animation
         carousel.next();
+        console.log(postsCarousel.first);
         return false;
     });
 
     jQuery('#mycarousel-prev').bind('click', function() {
         stopCurrentCarouselAnimation(); // stop ongoing animation
         carousel.prev();
+        getCarouselIndex();
         return false;
     });
 }
@@ -336,7 +341,8 @@ $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X
         });
         var lis = $(onlyDivs).wrapAll('<li id="' + this + '"/>');
     });
-    $('#mycarousel').prepend($('li').get().reverse());
+    var liElements = $('li');
+    $('#mycarousel').prepend(liElements.get().reverse());
 
     // initialize carousel
     jQuery('#mycarousel').jcarousel({
@@ -346,7 +352,8 @@ $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X
         buttonPrevHTML: null,
         initCallback: mycarousel_initCallback,
         visible: 1,
-        scroll: 1
+        scroll: 1,
+        start: liElements.size()
     });
 
     var AVGserie = {
