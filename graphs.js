@@ -136,7 +136,7 @@ jQuery(document).ready(function() {
     // expandable divs for charts
     $.each($('div[class*=HTML] > h2'), function() {
         $(this).click(function() {
-            $(this).siblings('div').slideToggle('slow');
+            $(this).siblings('div').slideToggle('fast');
         });
         $(this).hover(function() {
             $(this).css('cursor', 'pointer');
@@ -145,8 +145,6 @@ jQuery(document).ready(function() {
         }
                 );
         $(this).append("<div style='float: right' class='ui-expandable-icon ui-icon ui-icon-circle-triangle-s'></div>");
-
-
     });
 
     // Find all post dates
@@ -158,23 +156,32 @@ jQuery(document).ready(function() {
     });
 
     $('.blog-posts').prepend('<ul id="mycarousel" class="jcarousel-skin-tango"/>');
-    $('.blog-posts').prepend($('<div class="jcarousel-scroll"><form action=""><a href="#" id="mycarousel-prev">&laquo; Prev </a><a href="#" id="mycarousel-next">Next &raquo;</a></form></div>'));
+    $('.blog-posts').prepend($('<div class="jcarousel-scroll"><form action=""><a href="#" id="mycarousel-prev">&laquo; Prev </a> | <a href="#" id="mycarousel-next"> Next &raquo;</a></form></div>'));
 
 
 });
+
+stopCurrentCarouselAnimation = function () {
+    $('ul').stop(false, true);
+};
+
 var postsCarousel;
 function mycarousel_initCallback(carousel) {
     postsCarousel = carousel;
     jQuery('#mycarousel-next').bind('click', function() {
+        stopCurrentCarouselAnimation(); // stop ongoing animation
         carousel.next();
         return false;
     });
 
     jQuery('#mycarousel-prev').bind('click', function() {
+        stopCurrentCarouselAnimation(); // stop ongoing animation
         carousel.prev();
         return false;
     });
 }
+
+var active;
 
 var options = {
     chart: {
@@ -220,15 +227,17 @@ var options = {
         crosshairs: true,
         shared: true,
         formatter: function() {
+            active = this.points[0].point;
             var thisWorkoutDate = new Date(this.x).format("yyyymmdd");
             var indexOfLi = $('li[id=' + thisWorkoutDate + ']').index();
             if (indexOfLi >= 0) {
-                $('ul').stop(false, true);
+                stopCurrentCarouselAnimation(); // stop ongoing animation
                 postsCarousel.scroll(indexOfLi + 1, true);
             }
             var s = '<span style="font-size: smaller;">' + new Date(this.x).toDateString() + '</span>';
 
             $.each(this.points, function(i, point) {
+
                 s += '<br/><span style="color: ' + point.series.color + '">' + point.series.name + '</span>: <b>' +
                         point.y + '</b>';
             });
@@ -277,12 +286,6 @@ var options = {
 var workSeries = new js_cols.HashMap();
 
 var averageSerie = new js_cols.HashMap();
-
-var slowDrawGraphs;
-
-if ($.cookie('ImStillHere') == null) {
-    slowDrawGraphs = true;
-}
 
 $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X09jTnBrOVYtNDBKTkE/od7/public/basic?alt=json-in-script&callback=?", function(data) {
     $.each(data.feed.entry, function(no, row) {
@@ -380,7 +383,15 @@ $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X
     console.log(posts.getValues());
 
     // Create the chart
-    var chart = new Highcharts.Chart(options);
+    chart = new Highcharts.Chart(options);
+
+    $('#container').mouseleave(function(){
+        console.log(active);
+        var points = [];
+        points.push(chart.series[0].data[chart.series[0].data.length-1]);
+        points.push(chart.series[1].data[chart.series[1].data.length-1]);
+        chart.tooltip.refresh(active); // funkar inte, behöver punkten från series?? Men http://jsfiddle.net/DkmgP/  ??
+    });
 });
 
 
