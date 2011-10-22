@@ -145,6 +145,9 @@ $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X
 
     // Create the chart
     var chartBW = new Highcharts.Chart(optionsBW);
+
+    
+    $('#HTML3 > DIV[class="widget-content"]').delay(2000).slideUp('fast');
 });
 
 
