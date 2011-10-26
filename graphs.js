@@ -166,25 +166,7 @@ stopCurrentCarouselAnimation = function () {
 };
 
 var postsCarousel;
-function getCarouselIndex() {
-    console.log(postsCarousel.first);
-}
-function mycarousel_initCallback(carousel) {
-    postsCarousel = carousel;
-    jQuery('#mycarousel-next').bind('click', function() {
-        stopCurrentCarouselAnimation(); // stop ongoing animation
-        carousel.next();
-        console.log(postsCarousel.first);
-        return false;
-    });
 
-    jQuery('#mycarousel-prev').bind('click', function() {
-        stopCurrentCarouselAnimation(); // stop ongoing animation
-        carousel.prev();
-        getCarouselIndex();
-        return false;
-    });
-}
 
 var active;
 
@@ -232,21 +214,19 @@ var options = {
         crosshairs: true,
         shared: true,
         formatter: function() {
-            active = this.points[0].point;
             var thisWorkoutDate = new Date(this.x).format("yyyymmdd");
+            active = thisWorkoutDate;
             var indexOfLi = $('li[id=' + thisWorkoutDate + ']').index();
             if (indexOfLi >= 0) {
                 stopCurrentCarouselAnimation(); // stop ongoing animation
                 postsCarousel.scroll(indexOfLi + 1, true);
             }
+
             var s = '<span style="font-size: smaller;">' + new Date(this.x).toDateString() + '</span>';
-
             $.each(this.points, function(i, point) {
-
                 s += '<br/><span style="color: ' + point.series.color + '">' + point.series.name + '</span>: <b>' +
                         point.y + '</b>';
             });
-
             return s;
         }
     },
@@ -289,7 +269,7 @@ var options = {
 
 
 var workSeries = new js_cols.HashMap();
-
+var workPointsByDate = new js_cols.HashMap();
 var averageSerie = new js_cols.HashMap();
 
 $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X09jTnBrOVYtNDBKTkE/od7/public/basic?alt=json-in-script&callback=?", function(data) {
@@ -301,9 +281,10 @@ $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X
         var weightString = row.content.$t.split(",")[2];
         var secondsString = row.content.$t.split(",")[3];
         var date = dateString.match(datePattern).toString();
-        var work = Math.floor(parseInt(workString.match(workPattern)) / 60);
+        //var work = Math.floor(parseInt(workString.match(workPattern)) / 60);
         var weight = weightString.match(workPattern);
         var seconds = secondsString.match(workPattern);
+        var work = Math.floor(Math.sqrt( Math.pow(parseInt(weight),2) * parseInt(seconds) / 60) );
         var serieName = row.title.$t;
         var year = date.split("/")[2];
         var month = date.split("/")[0] - 1;
@@ -319,6 +300,9 @@ $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X
 
         // point
         var dateAndWork = {x: utcDate, y: work, weight: weight, seconds: seconds};
+        var existingPointsOnDate = workSeries.get(formattedDate, []);
+        existingPointsOnDate.push(dateAndWork);
+        workPointsByDate.insert(formattedDate, existingPointsOnDate);
 
         existingSerie.push(dateAndWork);
         workSeries.insert("" + serieName, existingSerie);
@@ -341,8 +325,42 @@ $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X
         });
         var lis = $(onlyDivs).wrapAll('<li id="' + this + '"/>');
     });
+
     var liElements = $('li');
-    $('#mycarousel').prepend(liElements.get().reverse());
+    var reversedPostsList = liElements.get().reverse();
+    $('#mycarousel').prepend(reversedPostsList);
+
+
+    function getCurrentPostDate(movement) {
+        var goto;
+        goto = postsCarousel.first + movement;
+        if (goto >= 1 && goto <= postsCarousel.size()) {
+            var date = $('li[jcarouselindex=' + goto + ']').attr('id');
+
+            var points = workPointsByDate.get(date).slice(1); // first element is not a point
+            console.log(points);
+
+            chart.tooltip.refresh( points);
+        }
+
+    }
+
+    function mycarousel_initCallback(carousel) {
+        postsCarousel = carousel;
+        jQuery('#mycarousel-next').bind('click', function() {
+            stopCurrentCarouselAnimation(); // stop ongoing animation
+            //carousel.next();
+            getCurrentPostDate(1);
+            return false;
+        });
+
+        jQuery('#mycarousel-prev').bind('click', function() {
+            stopCurrentCarouselAnimation(); // stop ongoing animation
+            //carousel.prev();
+            getCurrentPostDate(-1);
+            return false;
+        });
+    }
 
     // initialize carousel
     jQuery('#mycarousel').jcarousel({
@@ -383,22 +401,28 @@ $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X
             data: workSeries.get(key)
         };
         options.series.push(serie);
-
-
     });
-    console.log("after json fetch:");
-    console.log(posts.getValues());
 
     // Create the chart
     chart = new Highcharts.Chart(options);
 
-    $('#container').mouseleave(function(){
-        console.log(active);
-        var points = [];
-        points.push(chart.series[0].data[chart.series[0].data.length-1]);
-        points.push(chart.series[1].data[chart.series[1].data.length-1]);
-        chart.tooltip.refresh(active); // funkar inte, behöver punkten från series?? Men http://jsfiddle.net/DkmgP/  ??
+    $.each(chart.series, function(i, serie) {
+        $.each(this.data, function() {
+            var formattedDate = new Date(this.x).format("yyyymmdd");
+            var existingPoints = workPointsByDate.get(formattedDate, []);
+            existingPoints.push(this);
+            workPointsByDate.insert(formattedDate, existingPoints);
+        });
     });
+
+
+
+    /*
+    $('#container').mouseleave(function() {
+        console.log(active);
+        chart.tooltip.refresh(workPointsByDate.get(active).slice(1)); // funkar inte, behöver punkten från series?? Men http://jsfiddle.net/DkmgP/  ??
+    });
+    */
 });
 
 
