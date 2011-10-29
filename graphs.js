@@ -11,6 +11,8 @@
  * The date defaults to the current date/time.
  * The mask defaults to dateFormat.masks.default.
  */
+if(!$.browser.msie) {
+
 
 var dateFormat = function () {
     var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
@@ -156,7 +158,7 @@ jQuery(document).ready(function() {
     });
 
     $('.blog-posts').prepend('<ul id="mycarousel" class="jcarousel-skin-tango"/>');
-    $('.blog-posts').prepend($('<div class="jcarousel-scroll"><form action=""><a href="#" id="mycarousel-prev">&laquo; Prev </a> | <a href="#" id="mycarousel-next"> Next &raquo;</a></form></div>'));
+    $('.blog-posts').prepend($('<div class="jcarousel-scroll"><form action=""><a href="#" id="mycarousel-prev">&laquo; Previous </a> | <a href="#" id="mycarousel-next"> Next &raquo;</a> (keyboard arrows work)</form></div>'));
 
 
 });
@@ -200,7 +202,7 @@ var options = {
         {
             maxZoom: 20,
             title: {
-                text: 'Work: TUL (minutes) * weight (kg)'
+                text: 'Work: TUL (minutes) * weight (kg) ^ 2'
             },
             labels: {
                 style: {
@@ -433,4 +435,16 @@ function resetCookie() {
     $.cookie("ImStillHere", "ImStillHere", {expires: date, path: '/'});
 }
 
+$(document).keydown(function(e){
+    if (e.keyCode == 37) {
+        jQuery('#mycarousel-prev').click();
+    }
+    if (e.keyCode == 39) {
+        jQuery('#mycarousel-next').click();
+    }
+});
 
+    }
+else {
+    $('#main').prepend("<div style='color: red'>I'm sorry, you are using a crappy browser, so this page will not display correctly. Please use a better one (Chrome, Firefox or Safari) and come back...</div>");
+}
