@@ -156,10 +156,10 @@ jQuery(document).ready(function() {
         var date = new Date(Date.parse(dateString)).format("yyyymmdd");
         posts.insert(date, div);
     });
-
     $('.blog-posts').prepend('<ul id="mycarousel" class="jcarousel-skin-tango"/>');
-    $('.blog-posts').prepend($('<div class="jcarousel-scroll"><form action=""><a href="#" id="mycarousel-prev">&laquo; Previous </a> | <a href="#" id="mycarousel-next"> Next &raquo;</a> (keyboard arrows work)</form></div>'));
-
+    if(window.location.pathname == "/") {
+        $('.blog-posts').prepend($('<div class="jcarousel-scroll"><form action=""><a href="#" id="mycarousel-prev">&laquo; Previous </a> | <a href="#" id="mycarousel-next"> Next &raquo;</a> (keyboard arrows work)</form></div>'));
+    }
 
 });
 
@@ -277,7 +277,7 @@ var averageSerie = new js_cols.HashMap();
 $.getJSON("https://spreadsheets.google.com/feeds/list/0Au0hpogKf0qOdFVVMUNrejh2X09jTnBrOVYtNDBKTkE/od7/public/basic?alt=json-in-script&callback=?", function(data) {
     $.each(data.feed.entry, function(no, row) {
         var datePattern = /\d\S*\d{4}/ig;
-        var workPattern = /\d+(.\d+)?(?!.)/;
+        var workPattern = /\d+(?:\.\d+)?(?!.)/;
         var dateString = row.content.$t.split(",")[0];
         var workString = row.content.$t.split(",")[1];
         var weightString = row.content.$t.split(",")[2];
