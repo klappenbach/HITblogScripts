@@ -202,7 +202,7 @@ var options = {
         {
             maxZoom: 20,
             title: {
-                text: 'Work: TUL (minutes) * weight (kg) ^ 2'
+                text: 'Work'
             },
             labels: {
                 style: {
